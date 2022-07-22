@@ -7,15 +7,12 @@
 
 void send_notification(int time, bool sec) {
   char command[100];
-  char suffix[5] = "secs";
 
-  if (sec != true) {
-    // grammar ftw
-    strcpy(suffix, "mins");
-    if (time == 60) strcpy(suffix, "min");
-    time /= 60;
-  }
-  snprintf(command, 100, "notify-send -u low '%d %s over :)'\n", time, suffix);
+  char suffix[7] = "mins";
+  if (sec == true) strcpy(suffix, "secs");
+
+  int j = snprintf(command, 100, "notify-send -u low '%d %s over :)'\n", time,
+                   suffix);
   system(command);
 }
 
@@ -48,9 +45,8 @@ int main(int argc, char *argv[]) {
   if (argc == 3) arg_num += 1;
   int time_x = atoi(argv[arg_num]);
 
+  send_notification(time_x, sec);
   if (sec != true) time_x *= 60;
   printf("%d\n", time_x);
   sleep(time_x);
-
-  send_notification(time_x, sec);
 }
