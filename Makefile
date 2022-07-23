@@ -13,4 +13,4 @@ debug:
 	@echo "Debugging..."
 	clang-format -i -style=file src/main.c
 	gcc -c ${CFLAGS} src/main.c -o obj/main.o 
-	gcc -o bin/timer obj/main.o
+	gcc -o bin/timer -lm obj/main.o
