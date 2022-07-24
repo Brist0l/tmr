@@ -68,7 +68,6 @@ int main(int argc, char *argv[]) {
   int time_x = atoi(argv[arg_num]);
 
   if (sec != true) time_x *= 60;
-  printf("%d\n", time_x);
 
   for (int i = time_x; i > 0; i--) {
     convert_time(i, sec);
