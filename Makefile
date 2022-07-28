@@ -12,5 +12,4 @@ clean:
 debug:
 	@echo "Debugging..."
 	clang-format -i -style=file src/main.c
-	gcc -c ${CFLAGS} src/main.c -o obj/debug/main.o 
-	gcc -o bin/debug/timer -lm obj/debug/main.o
+	gcc  ${CFLAGS} src/main.c src/get_input.c -o bin/debug/timer -lm
