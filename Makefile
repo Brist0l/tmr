@@ -4,8 +4,3 @@ CFLAGS = -03
 timer:
 	clang-format -i -style=file src/main.c src/get_input.c
 	gcc -o bin/release/timer ${DEBUG_CFLAGS} -lm src/main.c src/get_input.c
-clean:
-	@echo "Cleaning...."
-	rm -rf obj/
-	rm -rf src/
-	rm -rf bin/debug
