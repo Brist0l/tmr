@@ -1,15 +1,11 @@
-CFLAGS = -g3 -Wextra -Werror -march=native -mtune=native -Wshadow 
+DEBUG_CFLAGS = -g3 -Wextra -Werror -march=native -mtune=native -Wshadow 
+CFLAGS = -03
 
-timer:main.o
-	gcc -o bin/release/timer -lm obj/release/main.o
-main.o:
-	clang-format -i -style=file src/main.c
-	gcc -c -O3 src/main.c -o obj/release/main.o
+timer:
+	clang-format -i -style=file src/main.c src/get_input.c
+	gcc -o bin/release/timer ${DEBUG_CFLAGS} -lm src/main.c src/get_input.c
 clean:
 	@echo "Cleaning...."
 	rm -rf obj/
 	rm -rf src/
-debug:
-	@echo "Debugging..."
-	clang-format -i -style=file src/main.c
-	gcc  ${CFLAGS} src/main.c src/get_input.c -o bin/debug/timer -lm
+	rm -rf bin/debug
