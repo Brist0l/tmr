@@ -3,3 +3,6 @@ CFLAGS = -O3
 
 timer:
 	gcc -o timer ${CFLAGS} -lm src/main.c
+
+debug:
+	gcc -o timer_debug ${DEBUG_CFLAGS} -lm src/main.c
