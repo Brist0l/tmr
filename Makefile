@@ -1,4 +1,4 @@
-DEBUG_CFLAGS = -g3 -Wextra -Werror -march=native -mtune=native -Wshadow 
+DEBUG_CFLAGS = -g3 -Wpedantic -Wextra -Werror -march=native -mtune=native -Wshadow 
 CFLAGS = -O3
 
 timer:

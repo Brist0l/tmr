@@ -1,10 +1,10 @@
 # Timer
 
-A timer utility to be for linux. A notification would be sent after the time is over.
+A timer utility for linux. A notification would be sent after the given time has elapsed.
 
 ## Installation
 
-You can either choose to compile it or download the latest stable release
+You can either choose to compile it or download the executable 
 
 ### Compiling it
 1)Clone the repo
@@ -13,9 +13,7 @@ You can either choose to compile it or download the latest stable release
 
 3)Run `make`
 
-4)The binary would be found in `bin/release/timer`
-
-### Downloading the stable release
+### Downloading the executable
 
 1) Click and download the binary present on the right side of the github page under the heading `Releases`
 
@@ -28,7 +26,7 @@ This will start a timer for the given amount of time(note: time is calculated in
 To set the timer for few seconds use the flag `-s`
 eg:
 
-`./timer {timer} -s`
+`./timer -s {time}`
 
 ## Requirements
 

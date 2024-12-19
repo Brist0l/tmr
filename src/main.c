@@ -54,9 +54,6 @@ int main(int argc, char* argv[]) {
 	
 	if(getopt(argc,argv,"s")=='s')
                 	is_sec = true;
-                
-                //        fprintf(stderr, "Usage: ./timer (time)\n-s\tseconds\n");
-                 //       exit(EXIT_FAILURE);
 
       	if(argc == 3) // if -s flag is also included
 	      	arg_num += 1;
