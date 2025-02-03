@@ -3,7 +3,6 @@
 #include<stdlib.h>
 
 void gethelp(char *ok,char *path){
-
 	FILE *fp = popen(ok,"r");
 
   	if (fp == NULL){
@@ -62,7 +61,7 @@ struct t_thing sendargs(int argc,char *args[]){
 				j = 0;
 				continue;
 			}
-			
+
 			thing.sliced_args[word][j++] = *(path+i);	
 			if(*(path+i) == 10) // if char is line feed
 				break;

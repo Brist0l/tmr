@@ -1,3 +1,5 @@
+#define _XOPEN_SOURCE
+
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,11 +9,23 @@
 #include <stdbool.h>
 
 #include "headers/args.h"
-#include "headers/time.h"
 
+#define PROGRESSBAR 15
+
+void constrtotm(const char *str_time,struct tm *tm);
 double convert_to_sec(struct tm *tm);
-void convert_time(time_t time);
+void convert_time(time_t time,bool first);
 void send_notification(time_t time, bool sec);
+
+void constrtotm(const char *str_time,struct tm *tm){
+	struct tm *tmp;
+
+	memset(tm,0,sizeof(tm));		
+	time_t curr_time = time(NULL);
+	tmp = localtime(&curr_time);
+	*tm = *tmp;	
+	strptime(str_time,"%H:%M:%S",tm);// converts the string into struct tm
+}
 
 double convert_to_sec(struct tm *tm){
 	time_t tmp_current_time = time(NULL);
@@ -25,10 +39,17 @@ double convert_to_sec(struct tm *tm){
 		fprintf(stderr,"Enter a time that is bigger than current time");
 }
 
-void convert_time(time_t time){
+void convert_time(time_t time,bool first){
+	static int time_till_update;
+	if(first == true){
+		float new_time = time;
+	   	time_till_update = ceil(new_time/PROGRESSBAR);
+	}
+	
+	static short progress_bar_count = PROGRESSBAR;
+
       	int mins = time/60;
      	int secs= time - mins*60;
-
 
       	char suffix_minsx[5],suffix_secsx[5];
       
@@ -39,8 +60,19 @@ void convert_time(time_t time){
 		strcpy(suffix_minsx, "min");
       	if(secs <= 1) 
 	      	strcpy(suffix_secsx, "sec");
+	
+      	printf("\rTime Left: %d %s %d %s\r\t\t\t\t", mins, suffix_minsx, secs, suffix_secsx);
 
-      	printf("\rTime Left: %d %s %d %s\r", mins, suffix_minsx, secs, suffix_secsx);
+	static char str[PROGRESSBAR];
+	if(time <= time_till_update)
+		for(int i = 0;i <= progress_bar_count;i++)
+			strcat(str,"-");
+	if(time % time_till_update == 0){
+		printf("[%s",str);
+		printf("\r\t\t\t\t\t\t]");
+		strcat(str,"-");
+		progress_bar_count--;
+	}
 }
 
 void send_notification(time_t time, bool is_sec) {
@@ -62,6 +94,7 @@ void send_notification(time_t time, bool is_sec) {
 int main(int argc, char* argv[]) {
       	bool is_sec = false;
 	bool is_clock = false;
+	bool first = true;
 	
 	struct t_thing args = sendargs(argc,argv);
 	
@@ -81,9 +114,10 @@ int main(int argc, char* argv[]) {
       
 	// makes the program sleep for the given amount of time
       	for(time_t i = time_x; i > 0; i--){
-            	convert_time(i);
+            	convert_time(i,first);
+		first = false;
             	fflush(stdout);
-            	sleep(1);
+          	sleep(1);
       }
 	printf("\n");
       	send_notification(time_x, is_sec);
