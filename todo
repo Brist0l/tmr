@@ -1,1 +1,4 @@
-1) Add functionality of giving time as argument and setting a timer until then (done)
+1) Fix the loading bar for when the time is less than 15
+2) show the logs 
+3) Add feature where app name is provided and the time for which it is running is calculated.(use something like proc)
+4) add a flag to reverse time i.e [0 -> time_given]

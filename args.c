@@ -6,10 +6,11 @@ void gethelp(char *ok,char *path){
 	FILE *fp = popen(ok,"r");
 
   	if (fp == NULL){
-    		printf("Failed to run command\n" );
+    		fprintf(stderr,"Failed to run command\n" );
     		exit(1);
   	}
-
+	
+	printf("helping");
 	while (fgets(path,1024, fp) != NULL)
 		printf("%s\n",path);
 	exit(0);
@@ -25,7 +26,7 @@ struct t_thing sendargs(int argc,char *args[]){
 	FILE *fp;
   	char *path = (char *)malloc(1024); // need to make it dynamic later using "getmem"
 	
-	char ok[1024] = "python parser.py";
+	char ok[50] = "python parser.py";
 
 	int word = 0;
 	size_t j;

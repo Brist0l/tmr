@@ -7,15 +7,27 @@
 #include <time.h>
 #include <unistd.h>
 #include <stdbool.h>
+#include <signal.h>
 
 #include "headers/args.h"
+#include "headers/log.h"
 
 #define PROGRESSBAR 15
 
+time_t global_time;
+char log_name[10];
+
+void exit_handler(int sig);
 void constrtotm(const char *str_time,struct tm *tm);
 double convert_to_sec(struct tm *tm);
 void convert_time(time_t time,bool first);
 void send_notification(time_t time, bool sec);
+
+void exit_handler(int sig){
+	printf("The time elasped is:%d\n",global_time);
+	make_db(log_name,global_time);
+	exit(1);
+}
 
 void constrtotm(const char *str_time,struct tm *tm){
 	struct tm *tmp;
@@ -42,8 +54,8 @@ double convert_to_sec(struct tm *tm){
 void convert_time(time_t time,bool first){
 	static int time_till_update;
 	if(first == true){
-		float new_time = time;
-	   	time_till_update = ceil(new_time/PROGRESSBAR);
+		float new_time = time; // convert to float
+		time_till_update = ceil(new_time/PROGRESSBAR);
 	}
 	
 	static short progress_bar_count = PROGRESSBAR;
@@ -67,6 +79,7 @@ void convert_time(time_t time,bool first){
 	if(time <= time_till_update)
 		for(int i = 0;i <= progress_bar_count;i++)
 			strcat(str,"-");
+
 	if(time % time_till_update == 0){
 		printf("[%s",str);
 		printf("\r\t\t\t\t\t\t]");
@@ -92,6 +105,8 @@ void send_notification(time_t time, bool is_sec) {
 }
 
 int main(int argc, char* argv[]) {
+	signal(SIGINT,exit_handler);
+
       	bool is_sec = false;
 	bool is_clock = false;
 	bool first = true;
@@ -102,6 +117,12 @@ int main(int argc, char* argv[]) {
 	is_sec = pyboolconverter(args.sliced_args[1]);
      	char str_time[9];
 	strcpy(str_time,args.sliced_args[2]);	
+	strcpy(log_name,args.sliced_args[3]);
+
+	printf("Log:%s\n",log_name);
+
+	//clock time
+//	printf("ssrringy time:%s\n",str_time);
 	if(strcmp(str_time,"None") != 0){
 		struct tm time; 
 		constrtotm(str_time,&time);
@@ -109,6 +130,7 @@ int main(int argc, char* argv[]) {
 		is_sec = true;	
 		is_clock = true;
 	}
+
 	if(is_sec == false)
 		time_x *= 60;
       
@@ -118,7 +140,9 @@ int main(int argc, char* argv[]) {
 		first = false;
             	fflush(stdout);
           	sleep(1);
+		global_time = time_x - i + 1;
       }
 	printf("\n");
       	send_notification(time_x, is_sec);
+	exit_handler(0);
 }
