@@ -3,7 +3,7 @@ CFLAGS = -O3 -march=native -mtune=native
 FILES = main.c args.c log.c 
 
 timer:
-	gcc -o timer ${CFLAGS} -lm ${FILES}
+	gcc -o timer ${CFLAGS} -lm -l sqlite3 ${FILES}
 
 debug:
 	gcc -o timer_debug ${DEBUG_CFLAGS} -lm -l sqlite3 ${FILES}

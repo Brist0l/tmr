@@ -26,7 +26,7 @@ void send_notification(time_t time, bool sec);
 void exit_handler(int sig){
 	printf("The time elasped is:%d\n",global_time);
 	make_db(log_name,global_time);
-	exit(1);
+	exit(0);
 }
 
 void constrtotm(const char *str_time,struct tm *tm){
@@ -72,7 +72,7 @@ void convert_time(time_t time,bool first){
 		strcpy(suffix_minsx, "min");
       	if(secs <= 1) 
 	      	strcpy(suffix_secsx, "sec");
-	
+
       	printf("\rTime Left: %d %s %d %s\r\t\t\t\t", mins, suffix_minsx, secs, suffix_secsx);
 
 	static char str[PROGRESSBAR];
@@ -110,16 +110,23 @@ int main(int argc, char* argv[]) {
       	bool is_sec = false;
 	bool is_clock = false;
 	bool first = true;
+	bool show_logs = false;
+	bool reverse_countdown = false;
+     	char str_time[9];
 	
 	struct t_thing args = sendargs(argc,argv);
 	
  	time_t time_x = atoi(args.sliced_args[0]);  // converting the str {time} into int
 	is_sec = pyboolconverter(args.sliced_args[1]);
-     	char str_time[9];
 	strcpy(str_time,args.sliced_args[2]);	
 	strcpy(log_name,args.sliced_args[3]);
+	show_logs = pyboolconverter(args.sliced_args[4]); // if show log then don't start the tmr
+	reverse_countdown = pyboolconverter(args.sliced_args[5]);
 
-	printf("Log:%s\n",log_name);
+	if(show_logs == true){
+		show_log();
+		exit(0);
+	}
 
 	//clock time
 //	printf("ssrringy time:%s\n",str_time);
