@@ -8,21 +8,36 @@
 #include <unistd.h>
 #include <stdbool.h>
 #include <signal.h>
+#include <pthread.h>
 
 #include "headers/args.h"
 #include "headers/log.h"
 #include "headers/proc.h"
 
 #define PROGRESSBAR 15
+#define NOTOPENTIME 5
 
 time_t global_time;
 char log_name[10];
 
+void *thread_func(void* arg);
 void exit_handler(int sig);
 void constrtotm(const char *str_time,struct tm *tm);
 double convert_to_sec(struct tm *tm);
 void convert_time(time_t time,bool first);
 void send_notification(time_t time, bool sec);
+
+void *thread_func(void* arg){
+	static int counter = 0;
+	if(counter == NOTOPENTIME){
+		focus();
+		counter = 0;
+	}
+	else
+		counter++;
+
+	return NULL;
+}
 
 void exit_handler(int sig){
 	printf("The time elasped is:%d\n",global_time);
@@ -114,6 +129,7 @@ int main(int argc, char* argv[]) {
 	bool show_logs = false;
 	bool reverse_countdown = false;
 	bool focus_mode = false;
+	bool notopen = false;
      	char str_time[9];
 	
 	struct t_thing args = sendargs(argc,argv);
@@ -125,6 +141,8 @@ int main(int argc, char* argv[]) {
 	show_logs = pyboolconverter(args.sliced_args[4]); // if show log then don't start the tmr
 	reverse_countdown = pyboolconverter(args.sliced_args[5]);
 	focus_mode = pyboolconverter(args.sliced_args[6]);
+	notopen = pyboolconverter(args.sliced_args[7]);
+
 
 	if(show_logs == true){
 		show_log();
@@ -146,15 +164,22 @@ int main(int argc, char* argv[]) {
 
 	if(is_sec == false)
 		time_x *= 60;
-      
+     	
+	pthread_t thread;
 	// makes the program sleep for the given amount of time
       	for(time_t i = time_x; i > 0; i--){
+		if(notopen == true)
+			pthread_create(&thread, NULL, thread_func, NULL);
             	convert_time(i,first);
 		first = false;
             	fflush(stdout);
           	sleep(1);
 		global_time = time_x - i + 1;
-      }
+		if(notopen == true)
+			pthread_join(thread,NULL);
+      	}
+
+	pthread_exit(NULL);
 	printf("\n");
       	send_notification(time_x, is_sec);
 	exit_handler(0);

@@ -10,7 +10,8 @@ parser.add_argument("-l","--log",type = str,help = "log the time for a certain a
 parser.add_argument("-p","--print",help = "show the log",action = "store_true")
 parser.add_argument("-r","--reverse",help = "reverse the countdown",action = "store_true")
 parser.add_argument("-f","--focus",help = "switches on focus mode which kills the distracting apps",action="store_true")
+parser.add_argument("-n","--notopen",help = "kills the distracting apps while the timer is running",action="store_true")
 
 args = parser.parse_args()
 
-print(args.time,args.second,args.clock,args.log,args.print,args.reverse,args.focus,end="\0")
+print(args.time,args.second,args.clock,args.log,args.print,args.reverse,args.focus,args.notopen,end="\0")
