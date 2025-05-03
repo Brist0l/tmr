@@ -11,6 +11,7 @@
 
 #include "headers/args.h"
 #include "headers/log.h"
+#include "headers/proc.h"
 
 #define PROGRESSBAR 15
 
@@ -112,6 +113,7 @@ int main(int argc, char* argv[]) {
 	bool first = true;
 	bool show_logs = false;
 	bool reverse_countdown = false;
+	bool focus_mode = false;
      	char str_time[9];
 	
 	struct t_thing args = sendargs(argc,argv);
@@ -122,11 +124,15 @@ int main(int argc, char* argv[]) {
 	strcpy(log_name,args.sliced_args[3]);
 	show_logs = pyboolconverter(args.sliced_args[4]); // if show log then don't start the tmr
 	reverse_countdown = pyboolconverter(args.sliced_args[5]);
+	focus_mode = pyboolconverter(args.sliced_args[6]);
 
 	if(show_logs == true){
 		show_log();
 		exit(0);
 	}
+
+	if(focus_mode == true)
+		focus();
 
 	//clock time
 //	printf("ssrringy time:%s\n",str_time);

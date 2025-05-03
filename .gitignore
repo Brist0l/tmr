@@ -1,4 +1,6 @@
 /bin
 /obj
+todo
+log.db
 timer
-/ignore
+timer_debug
