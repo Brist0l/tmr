@@ -70,3 +70,34 @@ void focus(){
 	pclose(fp1);
   	pclose(fp2);
 }
+
+void time_running(char* process_name){
+	FILE *fp1;
+	FILE *fp2;
+  	char path[1024];
+	char *ps = (char *)malloc(20000);
+	char *focus = (char *)malloc(20000);
+	char **tokens;
+
+  	fp1 = popen("ps -eo comm,etime", "r");
+  	fp2 = fopen("focus.txt", "r");
+
+  	while(fgets(path, sizeof(path), fp1) != NULL)
+		strcat(ps,path);
+  	while(fgets(path, sizeof(path), fp2) != NULL)
+		strcat(focus,path);
+
+	tokens = str_split(focus,'\n');
+
+	for(int i = 0;*(tokens + i);i++){
+		char *ff = strstr(ps,*(tokens+i));
+		if(ff != NULL){
+			char command[100] = "killall ";
+			strcat(command,*(tokens+i));
+			system(command);
+		}
+	}
+
+	pclose(fp1);
+  	pclose(fp2);
+}

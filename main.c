@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <signal.h>
 #include <pthread.h>
+#include <termios.h>
 
 #include "headers/args.h"
 #include "headers/log.h"
@@ -19,7 +20,11 @@
 
 time_t global_time;
 char log_name[10];
+static struct termios oldt;
+bool _pause = false;
 
+void non_canonical_term();
+void *thread_takeinput(void* arg);
 void *thread_func(void* arg);
 void exit_handler(int sig);
 void constrtotm(const char *str_time,struct tm *tm);
@@ -27,6 +32,41 @@ double convert_to_sec(struct tm *tm);
 void convert_time(time_t time,bool first);
 void send_notification(time_t time, bool sec);
 
+
+void non_canonical_term(){ 
+	static struct termios newt;
+
+    /*tcgetattr gets the parameters of the current terminal
+    STDIN_FILENO will tell tcgetattr that it should write the settings
+    of stdin to oldt*/
+    	tcgetattr( STDIN_FILENO, &oldt);
+    /*now the settings will be copied*/
+    	newt = oldt;
+
+    /*ICANON normally takes care that one line at a time will be processed
+    that means it will return if it sees a "\n" or an EOF or an EOL*/
+    	newt.c_lflag &= ~(ICANON);          
+
+    /*Those new settings will be set to STDIN
+    TCSANOW tells tcsetattr to change attributes immediately. */
+    	tcsetattr( STDIN_FILENO, TCSANOW, &newt);
+}
+
+void *thread_takeinput(void* arg){
+    /*I choose ' ' to end input. Notice that EOF is also turned off
+    in the non-canonical mode*/
+	char c;	
+	while (true){
+//		printf("_pause's value: %s\n", _pause ? "true":"false");
+		c = getchar();
+    		if((c == ' ') && _pause == false)
+			_pause = true;
+		else
+			_pause = false;
+	}
+	
+	return NULL;
+}
 void *thread_func(void* arg){
 	static int counter = 0;
 	if(counter == NOTOPENTIME){
@@ -40,6 +80,7 @@ void *thread_func(void* arg){
 }
 
 void exit_handler(int sig){
+//      	send_notification(time_x, is_sec);
 	printf("The time elasped is:%d\n",global_time);
 	make_db(log_name,global_time);
 	exit(0);
@@ -164,23 +205,38 @@ int main(int argc, char* argv[]) {
 
 	if(is_sec == false)
 		time_x *= 60;
-     	
+
+	non_canonical_term();
+
 	pthread_t thread;
+	pthread_t thread2;
+
+	pthread_create(&thread2, NULL, thread_takeinput, NULL);
+
 	// makes the program sleep for the given amount of time
       	for(time_t i = time_x; i > 0; i--){
 		if(notopen == true)
 			pthread_create(&thread, NULL, thread_func, NULL);
+		
             	convert_time(i,first);
 		first = false;
             	fflush(stdout);
-          	sleep(1);
-		global_time = time_x - i + 1;
+
+		if(_pause == false){
+          		sleep(1);
+			global_time = time_x - i + 1;
+		}
+		else{
+			while(_pause == true);
+		//	_pause = false;
+		}
+		if(i == 1)
+			pthread_cancel(thread2);
 		if(notopen == true)
 			pthread_join(thread,NULL);
       	}
-
-	pthread_exit(NULL);
+    	tcsetattr( STDIN_FILENO, TCSANOW, &oldt); //return terminal to the old setting
 	printf("\n");
-      	send_notification(time_x, is_sec);
 	exit_handler(0);
+	pthread_exit(NULL);
 }
