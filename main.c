@@ -22,6 +22,7 @@ time_t global_time;
 char log_name[10];
 static struct termios oldt;
 bool _pause = false;
+pthread_t thread2;
 
 void non_canonical_term();
 void *thread_takeinput(void* arg);
@@ -67,6 +68,7 @@ void *thread_takeinput(void* arg){
 	
 	return NULL;
 }
+
 void *thread_func(void* arg){
 	static int counter = 0;
 	if(counter == NOTOPENTIME){
@@ -80,9 +82,11 @@ void *thread_func(void* arg){
 }
 
 void exit_handler(int sig){
-//      	send_notification(time_x, is_sec);
 	printf("The time elasped is:%d\n",global_time);
-	make_db(log_name,global_time);
+	pthread_cancel(thread2);
+	pthread_exit(NULL);
+	if(strcmp(log_name,"None") != 0)
+		make_db(log_name,global_time);
 	exit(0);
 }
 
@@ -184,7 +188,6 @@ int main(int argc, char* argv[]) {
 	focus_mode = pyboolconverter(args.sliced_args[6]);
 	notopen = pyboolconverter(args.sliced_args[7]);
 
-
 	if(show_logs == true){
 		show_log();
 		exit(0);
@@ -209,7 +212,6 @@ int main(int argc, char* argv[]) {
 	non_canonical_term();
 
 	pthread_t thread;
-	pthread_t thread2;
 
 	pthread_create(&thread2, NULL, thread_takeinput, NULL);
 
@@ -226,10 +228,8 @@ int main(int argc, char* argv[]) {
           		sleep(1);
 			global_time = time_x - i + 1;
 		}
-		else{
+		else
 			while(_pause == true);
-		//	_pause = false;
-		}
 		if(i == 1)
 			pthread_cancel(thread2);
 		if(notopen == true)
@@ -237,6 +237,6 @@ int main(int argc, char* argv[]) {
       	}
     	tcsetattr( STDIN_FILENO, TCSANOW, &oldt); //return terminal to the old setting
 	printf("\n");
+      	send_notification(time_x, is_sec);
 	exit_handler(0);
-	pthread_exit(NULL);
 }

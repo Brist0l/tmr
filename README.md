@@ -1,38 +1,85 @@
-# Timer
+🕒 tmr — A Feature-Rich Timer CLI Tool for Linux
 
-A timer utility for linux. A notification would be sent after the given time has elapsed.
+tmr is a minimalist yet powerful command-line timer tool designed for Linux users who want precise control over time, logs, focus, and productivity.
 
-## Installation
+With focus mode, activity logs, custom countdowns, and distraction control, tmr helps you not just track time — but command it.
 
-You can either choose to compile it or download the executable 
+⚙️ Features
 
-### Compiling it
-1)Clone the repo
+    ⏱ Set Custom Timers
+    Use --time or --clock to set durations or countdown to a specific time.
 
-2)`cd` into it
+    ⏳ Pause / Resume with Spacebar
+    No need to kill the process — just hit space to toggle pause/resume.
 
-3)Run `make`
+    📓 Activity Logging
+    Log time spent on activities using --log and review later with --print.
 
-### Downloading the executable
+    🚫 Focus Mode
+    Kill distracting apps listed in focus.txt using --focus.
 
-1) Click and download the binary present on the right side of the github page under the heading `Releases`
+    🛡️ Distraction Prevention
+    Automatically kill listed apps during the timer with --notopen.
 
-## Usage
+    🔔 Notifications
+    Sends a desktop notification when the timer ends
 
-`./timer {time}`
+🚀 Installation
 
-This will start a timer for the given amount of time(note: time is calculated in minutes if no flag is given)
+Make sure you're on Linux. Then clone the repo and build using make:
+```
+git clone https://github.com/Brist0l/tmr.git
+cd tmr
+make
+```
+You should now have the Timer binary ready to roll.
 
-To set the timer for few seconds use the flag `-s`
-eg:
+🛠 Usage
 
-`./timer -s {time}`
+./Timer [options]
+```
+🔧 Options
 
-## Requirements
+Flag	Description
+-t, --time	Time in minutes (or seconds with --second)
+-s, --second	Interprets --time as seconds instead of minutes
+-c, --clock	Set timer until a specific HH:MM format
+-l, --log	Log time spent on a named activity
+-p, --print	Print the activity log
+-r, --reverse	Reverse the countdown display
+-f, --focus	Kills distracting apps listed in focus.txt at start
+-n, --notopen	Continuously kills distracting apps while timer runs
+-o, --nonotification	Disable end-of-timer notification
+-h, --help	Show help message
 
-1) Any linux distro
+You can also press spacebar anytime to pause or resume the timer.
+```
 
-2) dunst
+🧠 Customizing Focus Mode
 
-3) notify-send
+You can configure which apps get killed during focus mode by editing focus.txt.
+Add one process name per line (e.g., discord, firefox, spotify).
+
+🔔 Notifications
+
+Notifications are sent using notify-send. Ensure you have it installed.
+
+📌 Example Commands
+```
+# Run a 25-minute Pomodoro timer with focus mode
+./Timer --time 25 --focus
+
+# Set a timer until 10:30 AM
+./Timer --clock 10:30
+
+# Log a 30-minute study session
+./Timer --time 30 --log "Studied Stats110"
+
+# Kill distracting apps if opened mid-session
+./Timer --time 20 --notopen
+```
+🧠 Why Use tmr?
+
+Most timers track time. tmr shapes your focus.
+You get the hardcore utility of a productivity tool without bloat or GUI clutter — just raw, keyboard-driven flow.
 
